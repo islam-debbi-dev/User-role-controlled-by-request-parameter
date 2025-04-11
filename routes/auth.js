@@ -24,7 +24,6 @@ router.use(
 
 // Login
 router.post('/login', (req, res) => {
-
     const { username, password } = req.body;
 
     const user = users.find(user => user.username === username);
@@ -32,17 +31,26 @@ router.post('/login', (req, res) => {
         res.status(401).send('Invalid username or password');
         return;
     }
-    if(user.password !== password) {
+    if (user.password !== password) {
         res.status(401).send('Invalid username or password');
-       return;
+        return;
     }
+
+    // Destroy the previous session if it exists
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                console.error('Error destroying session:', err);
+            }
+        });
+    }
+
+    // Create a new session
     req.session.user = { username: user.username, isAdmin: user.isAdmin };
     console.log(req.session.user);
 
     res.status(200).send('Login successful');
- 
 });
-
 
 // Logout
 router.post('/logout', (req, res) => {
