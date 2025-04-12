@@ -1,7 +1,5 @@
 const express = require('express');
-const session = require('express-session');
-
-const  User  = require('../models/user');
+const User = require('../models/user');
 const router = express.Router();
 
 
@@ -10,17 +8,6 @@ const user1 = new User(1, 'admin', 'password123', true);
 const user2 = new User(2, 'commonuser', 'password456', false);
 const user3 = new User(3, 'user3', 'password789', false);
 const users = [user1, user2, user3];
-
-// Configure session middleware
-router.use(
-    session({
-        name: 'sessionIdtset',
-        secret: 'your-secret-key',
-        resave: false,
-        saveUninitialized: true,
-        cookie: { secure: false },
-    })
-);
 
 // Login
 router.post('/login', (req, res) => {
@@ -36,24 +23,27 @@ router.post('/login', (req, res) => {
         return;
     }
 
-    // Destroy the previous session if it exists
-    if (req.session) {
-        req.session.destroy(err => {
-            if (err) {
-                console.error('Error destroying session:', err);
-            }
-        });
-    }
-
+    // user.isAdmin store it in cookies
+    res.cookie('isAdmin', user.isAdmin.toString(), {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Only send cookie over HTTPS in production
+        maxAge: 24 * 60 * 60 * 1000 // Cookie expires in 24 hours
+    });
     // Create a new session
-    req.session.user = { username: user.username, isAdmin: user.isAdmin };
+    req.session.user = {
+        username: user.username,
+        // isAdmin: user.isAdmin 
+    };
     console.log(req.session.user);
 
     res.status(200).send('Login successful');
 });
 
+
 // Logout
 router.post('/logout', (req, res) => {
+    res.clearCookie('isAdmin'); // Remove isAdmin cookie
+    res.clearCookie('sessionIdTest'); // Remove sessionIdTest cookie
     req.session.destroy(err => {
         if (err) {
             return res.status(500).send('Could not log out');
@@ -61,42 +51,26 @@ router.post('/logout', (req, res) => {
         res.status(200).send('Logout successful');
     });
 });
-// Middleware to check if user is authenticated
-const isAuthenticated = (req, res, next) => {
-    if (req.session.user) {
-        next();
-    } else {
-        res.status(401).send('Unauthorized');
-    }
-};
 
-// Middleware to check if user is admin
-const isAdmin = (req, res, next) => {
-    if (req.session.user && req.session.user.isAdmin === true) {
-        next();
-    } else {
-        res.status(403).send('Forbidden');
-    }
-};
-// Middleware to check if user is common user
-const isCommonUser = (req, res, next) => {
-    if (req.session.user && req.session.user.isAdmin === false) {
-        next();
-    } else {
-        res.status(403).send('Forbidden');
-    }
-};
+// Fetch all users
+router.get('/users', (req, res) => {
+    res.json(users); // Send the users array as JSON
+});
 
-// page for admin only
-router.get('/admin', isAuthenticated, isAdmin, (req, res) => {
-    res.status(200).send('Welcome Admin!');
-});
-// page for common user only
-router.get('/user', isAuthenticated, isCommonUser, (req, res) => {
-    res.status(200).send('Welcome Common User!');
-});
-// page for all authenticated users
-router.get('/dashboard', isAuthenticated, (req, res) => {
-    res.status(200).send('Welcome to the dashboard!');
+// Handle delete user
+router.delete('/users/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+        const userIndex = users.findIndex(user => user.id === parseInt(id));
+        
+        if (userIndex === -1) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        users.splice(userIndex, 1); // Remove the user from the array
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 module.exports = router; // Ensure the router is exported
