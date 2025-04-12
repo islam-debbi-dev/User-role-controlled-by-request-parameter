@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-lg">
+        <h2 class="text-2xl font-bold text-center mb-6">Manage Users</h2>
+        <table class="table-auto w-full border-collapse border border-gray-300">
+            <thead>
+                <tr>
+                    <th class="border border-gray-300 px-4 py-2">ID</th>
+                    <th class="border border-gray-300 px-4 py-2">Username</th>
+                    <th class="border border-gray-300 px-4 py-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="usersTable">
+                <!-- Users will be dynamically populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Fetch and display users
+        async function fetchUsers() {
+            try{
+            const response = await fetch('/auth/users');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            console.log(response);
+            
+            const users = await response.json();
+            
+            const usersTable = document.getElementById('usersTable');
+            usersTable.innerHTML = ''; // Clear existing rows
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="border border-gray-300 px-4 py-2">${user.id}</td>
+                    <td class="border border-gray-300 px-4 py-2">${user.username}</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                        <button 
+                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded"
+                            onclick="deleteUser(${user.id})">
+                            Delete
+                        </button>
+                    </td>
+                `;
+                usersTable.appendChild(row);
+            });
+            }catch(e){
+                console.log(e);
+            }
+        }
+
+        // Delete a user
+        async function deleteUser(id) {
+            try{
+            const response = await fetch(`/auth/users/${id}`, {
+                method: 'DELETE',
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert('User deleted successfully');
+                fetchUsers(); // Refresh the user list
+            } else {
+                alert(`Error: ${data.message.toString()}`);
+            }
+            }catch(e){
+                console.log(e);
+            }   
+        }
+
+        // Fetch users on page load
+        fetchUsers();
+    </script>
+</body>
+</html>

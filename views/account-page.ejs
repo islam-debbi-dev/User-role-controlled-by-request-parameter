@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-lg">
+        <h2 class="text-2xl font-bold text-center mb-6">Account Page</h2>
+        <div class="mb-4">
+            <p class="text-gray-700 text-lg">Welcome, <span class="font-bold"><%= username %></span>!</p>
+        </div>
+
+        <% if (isAdmin) { %>
+        <!-- Admin Panel -->
+        <div class="bg-gray-100 p-4 rounded shadow-md">
+            <h3 class="text-xl font-bold mb-4">Admin Panel</h3>
+            <ul class="list-disc pl-5 space-y-2">
+                <li><a href="/manage-users" class="text-blue-500 hover:underline">Manage Users</a></li>
+            </ul>
+        </div>
+        <% } else { %>
+        <!-- Non-Admin Message -->
+        <p class="text-gray-700">You do not have admin privileges.</p>
+        <% } %>
+
+        <div class="mt-6">
+            <form id="logoutForm">
+                <button
+                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+                    type="submit">
+                    Logout
+                </button>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.getElementById('logoutForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const response = await fetch('/auth/logout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+
+                if (response.ok) {
+                    window.location.href = '/login'; // Redirect to login page on success
+                } else {
+                    console.error('Logout failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
