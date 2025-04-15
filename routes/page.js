@@ -1,7 +1,5 @@
 const express = require('express');
 const {isAuthenticated} = require('../middlewares/isAuthenticated');
-const {isAdmin} = require('../middlewares/is-admin');
-const {isCommonUser} = require('../middlewares/isCommonUser');
 const router = express.Router();
 
 //login page
@@ -16,7 +14,7 @@ router.get('/account', isAuthenticated, (req, res) => {
     res.render('account-page.ejs', { username, isAdmin });
 });
 
-router.get('/manage-users', isAuthenticated,isAdmin, (req, res) => {
+router.get('/manage-users', isAuthenticated, (req, res) => {
     res.status(200).render('manage-users.ejs');
 });
 
