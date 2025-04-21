@@ -9,7 +9,7 @@ class User {
 }
 
 const user1 = new User(1, 'admin', 'adminp', 'true');
-const user2 = new User(2, 'commonuser', 'commonuserp', 'false');
+const user2 = new User(2, 'islam', 'islamp', 'false');
 const user3 = new User(3, 'user3', 'user3p', 'false');
 const users = [user1, user2, user3];
 

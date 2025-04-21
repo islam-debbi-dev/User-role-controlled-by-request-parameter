@@ -42,7 +42,7 @@ router.post('/logout', (req, res) => {
         if (err) {
             return res.status(500).send('Could not log out');
         }
-        res.status(200).send('Logout successful');
+        res.status(200).redirect('/');
     });
 });
 
