@@ -24,15 +24,15 @@ router.post('/login', (req, res) => {
     }
 
     // user.isAdmin store it in cookies
-    res.cookie('isAdmin', user.isAdmin.toString(), {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Only send cookie over HTTPS in production
-        maxAge: 24 * 60 * 60 * 1000 // Cookie expires in 24 hours
-    });
+    // res.cookie('isAdmin', user.isAdmin.toString(), {
+    //     httpOnly: true,
+    //     secure: process.env.NODE_ENV === 'production', // Only send cookie over HTTPS in production
+    //     maxAge: 24 * 60 * 60 * 1000 // Cookie expires in 24 hours
+    // });
     // Create a new session
     req.session.user = {
         username: user.username,
-        // isAdmin: user.isAdmin 
+        isAdmin: user.isAdmin 
     };
     console.log(req.session.user);
 
@@ -42,8 +42,8 @@ router.post('/login', (req, res) => {
 
 // Logout
 router.post('/logout', (req, res) => {
-    res.clearCookie('isAdmin'); // Remove isAdmin cookie
-    res.clearCookie('sessionIdTest'); // Remove sessionIdTest cookie
+    res.clearCookie('isAdmin'); 
+    res.clearCookie('sessionIdTest'); 
     req.session.destroy(err => {
         if (err) {
             return res.status(500).send('Could not log out');

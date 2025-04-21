@@ -11,12 +11,12 @@ router.get('/login', (req, res) => {
 
 
 router.get('/account', isAuthenticated, (req, res) => {
-    const { username } = req.session.user;
-    const isAdmin = req.cookies.isAdmin === 'true'; 
+    const username = req.session.user.username;
+    const isAdmin = req.session.user.isAdmin; 
     res.render('account-page.ejs', { username, isAdmin });
 });
 
-router.get('/manage-users', isAuthenticated,isAdmin, (req, res) => {
+router.get('/manage-users', isAuthenticated, (req, res) => {
     res.status(200).render('manage-users.ejs');
 });
 
