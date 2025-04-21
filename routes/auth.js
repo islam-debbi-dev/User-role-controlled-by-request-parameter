@@ -29,7 +29,6 @@ router.post('/login', (req, res) => {
         username: user.username,
        // isAdmin: user.isAdmin 
     };
-    console.log(req.session.user);
 
     res.status(200).send('Login successful');
 });
