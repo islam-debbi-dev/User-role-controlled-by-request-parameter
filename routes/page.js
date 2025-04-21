@@ -1,12 +1,12 @@
 const express = require('express');
 const {isAuthenticated,ifIsNotAuthenticatedRedirectTologin} = require('../middlewares/isAuthenticated');
+const {isAdmin} = require('../middlewares/is-admin');
 const router = express.Router();
 
 // home page
     router.get('/', (req, res) => {
         res.status(200).render('home-page.ejs');
-    }
-);
+    });
 
 //login page
 router.get('/login', (req, res) => {
@@ -16,7 +16,7 @@ router.get('/login', (req, res) => {
 
 router.get('/account', ifIsNotAuthenticatedRedirectTologin, (req, res) => {
     const username = req.session.user.username; 
-    // const isAdmin = req.session.user.isAdmin; 
+    
     const isAdmin = req.cookies.isAdmin === 'true';
     res.render('account-page.ejs', { username, isAdmin });
 });

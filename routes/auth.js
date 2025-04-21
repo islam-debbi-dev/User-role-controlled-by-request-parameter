@@ -1,5 +1,6 @@
 const express = require('express');
 const {users} = require('../models/user');
+const { isAdmin } = require('../middlewares/is-admin');
 const router = express.Router();
 
 
@@ -27,7 +28,6 @@ router.post('/login', (req, res) => {
     // Create a new session
     req.session.user = {
         username: user.username,
-       // isAdmin: user.isAdmin 
     };
 
     res.status(200).send('Login successful');
