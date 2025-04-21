@@ -9,13 +9,19 @@ router.get('/login', (req, res) => {
 
 
 router.get('/account', isAuthenticated, (req, res) => {
-    const username = req.session.user.username;
-    const isAdmin = req.session.user.isAdmin; 
+    const username = req.session.user.username; 
+    // const isAdmin = req.session.user.isAdmin; 
+    const isAdmin = req.cookies.isAdmin === 'true';
     res.render('account-page.ejs', { username, isAdmin });
 });
 
 router.get('/manage-users', isAuthenticated, (req, res) => {
+    const isAdmin = req.cookies.isAdmin === 'true';
+    console.log(`manage ${isAdmin}`);
+    if (!isAdmin) {
+        return res.status(403).send('Access denied.');
+    }
     res.status(200).render('manage-users.ejs');
 });
 
-module.exports = router; // Ensure the router is exported
+module.exports = router; 

@@ -1,15 +1,13 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const session = require('express-session');
-
 const app = express();
+
 dotenv.config();
-// ejs 
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
-// Middleware to parse JSON request body
 app.use(express.json());
 
 // Configure session middleware
@@ -26,7 +24,7 @@ app.use(
 
 app.use('/auth', require('./routes/auth'));
 app.use('/', require('./routes/page'));
-
+app.use('/user', require('./routes/user'));
 const PORT = process.env.PORT || 5000;
 
 

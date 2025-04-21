@@ -61,7 +61,7 @@
         // Delete a user
         async function deleteUser(id) {
             try{
-            const response = await fetch(`/auth/users/${id}`, {
+            const response = await fetch(`/user/users/${id}`, {
                 method: 'DELETE',
             });
             const data = await response.json();
