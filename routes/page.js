@@ -1,7 +1,5 @@
 const express = require('express');
 const {isAuthenticated} = require('../middlewares/isAuthenticated');
-const {isAdmin} = require('../middlewares/is-admin');
-const {isCommonUser} = require('../middlewares/isCommonUser');
 const router = express.Router();
 
 //login page
